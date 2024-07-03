@@ -116,6 +116,7 @@ function Catigories() {
       <Layout className="home-layout">
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
+          <h1 className='home-title'>Autozoom Admin</h1>
           <Menu
             onClick={buttonjon}
             theme="dark"
