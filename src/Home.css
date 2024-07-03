@@ -1,0 +1,19 @@
+.home-container{
+    width: 100%;
+    margin: 0;padding: 0;
+}
+.home-loat{
+    width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+}
+.logout-btn{
+    margin-left: 900px;
+    align-items: center;
+}
+.home-title{
+    margin-left: 20px;
+    font-size: 18px;
+    font-family: sans-serif;
+    color: rgb(193, 193, 193);
+}
