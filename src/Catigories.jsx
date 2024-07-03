@@ -7,7 +7,7 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, Modal, theme } from "antd";
+import { Button, Layout, Menu, Modal, message, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
 function Catigories() {
@@ -16,7 +16,7 @@ function Catigories() {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [idjon, setidjon]=useState(null)
+  const [idjon, setidjon] = useState(null);
   const { Header, Sider, Content } = Layout;
   const [list, setList] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -26,12 +26,15 @@ function Catigories() {
   const [pic, setPic] = useState(null);
   const [editItemId, setEditItemId] = useState(null);
   const [error, setError] = useState(null);
+  const [addmodla, setaddmodal] = useState(false);
+  const accessToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
 
   useEffect(() => {
-    fetchData();
+    getList();
   }, []);
 
-  const fetchData = () => {
+  const getList = () => {
     fetch("https://autoapi.dezinfeksiyatashkent.uz/api/categories")
       .then((res) => res.json())
       .then((data) => setList(data?.data || []))
@@ -66,16 +69,49 @@ function Catigories() {
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    setIsEditModalOpen(false);
+    const formData = new FormData();
+    formData.append("name_en", nameEn);
+    formData.append("name_ru", nameRu);
+    if (pic) {
+      formData.append("images", pic);
+    }
+    fetch(
+      `https://autoapi.dezinfeksiyatashkent.uz/api/categories/${editItemId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+      }
+    )
+      .then((res) => res.json())
+      .then((resp) => {
+        if (resp.success) {
+          getList();
+          handleCancel();
+          toast.success("Kategoriya Muvafaqatliy Tahrirlandi");
+        } else {
+          console.error("Kategoriyani tahrirlashda xato:", resp);
+          message.success("Kategoriya tahrirlanmadi");
+        }
+      })
+      .catch((error) => {
+        message.success("Kategoriya tahrirlandi");
+        console.error("Ma'lumotlarni tahrirlashda xato:", error);
+      });
   };
 
   const showDeleteModal = (id) => {
     setIsDeleteModalOpen(true);
-    setidjon(item.id)
+    setidjon(id);
   };
 
   const confirmDelete = () => {
-    uchirbtn(id)
+    if (idjon) {
+      uchirbtn(idjon);
+      message.success("Muvafaqatliy uchirildi");
+    }
   };
 
   const handleCancel = () => {
@@ -86,37 +122,87 @@ function Catigories() {
     setPic(null);
     setEditItemId(null);
   };
-  const uchirbtn=(id)=>{
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${id}`,{
-        method: "DELET",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-    } )
-    .then((res)=>res.json)
-    .then((resp)=> {
+
+  const uchirbtn = (id) => {
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((resp) => {
         if (resp.success) {
-          toast.success("muvafaqatliy uchirildi")
+          message.success("muvafaqatliy uchirildi");
           getList();
           handleCancel();
         } else {
-          toast.error("Nimadir xato")
+          message.error("Nimadir xato");
           console.error("Kategoriyani o'chirishda xato:", resp);
         }
       })
       .catch((error) => {
         console.error("Ma'lumotlarni o'chirishda xato:", error);
       });
+  };
+
+  const logout = () => {
+    navigate("/");
+  };
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState("Content of the modal");
+  const showModal = () => {
+    setOpen(true);
+  };
+  const handleOk = () => {
+    setModalText("The modal will be closed after two seconds");
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
+    katadd();
+  };
+  const handleCancell = () => {
+    console.log("Clicked cancel button");
+    setOpen(false);
+  };
+  const katadd=()=>{
+    const formData = new FormData();
+    formData.append("name_en", nameEn);
+    formData.append("name_ru", nameRu);
+    formData.append("images", pic);
+    e.preventDefault();
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories`,{
+        method:"POST",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+    })
+    .then((res) => res.json())
+      .then((resp) => {
+        if (resp.success) {
+          getList();
+          handleCancel();
+          toast.success("Kategoriya Muvafaqatliy Qushilidi")
+        } else {
+          console.error("Kategoriyani qo'shishda xato:", resp);
+          toast.error("Nimadir Xato")
+        }
+      })
+      .catch((error) => {
+        console.error("Ma'lumotlarni yuborishda xato:", error);
+      });
   }
-  const logout=()=>{
-    navigate('/')
-  }
+
   return (
     <div className="categories-container">
       <Layout className="home-layout">
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
-          <h1 className='home-title'>Autozoom Admin</h1>
+          <h1 className="home-title">Autozoom Admin</h1>
           <Menu
             onClick={buttonjon}
             theme="dark"
@@ -173,9 +259,30 @@ function Catigories() {
                 height: 64,
               }}
             />
-            <Button type="primary">Add</Button>
-            <Button type="primary" danger className="logout-btn" onClick={logout}>
-              Log out
+            <Button type="primary" onClick={showModal}>
+             Qushish
+            </Button>
+            <Modal
+              title="Kategoriya qushish"
+              open={open}
+              onOk={handleOk}
+              confirmLoading={confirmLoading}
+              onCancel={handleCancell}
+            >
+            <p>Name en Kiriting</p>
+            <input type="text" placeholder="nameen" required value={nameRu}/> <br />
+            <p>Name ru Kiriting</p>
+            <input type="text" placeholder="Nameru" required value={nameEn}/> <br />
+            <p>rasm Kiriting</p>
+            <input type="file" placeholder="Rasm" required accept="image"   onChange={(e) => setPic(e.target.files[0])}/><br />
+            </Modal>
+            <Button
+              type="primary"
+              danger
+              className="logout-btn"
+              onClick={logout}
+            >
+              Chiqish
             </Button>
           </Header>
           <Content
@@ -212,18 +319,19 @@ function Catigories() {
                     </td>
                     <td>
                       <Button
-                        className="editjon-btn"
+                        className="edit-btn"
                         type="primary"
                         onClick={() => showEditModal(item)}
                       >
-                        Edit
+                        Tahrirlash
                       </Button>
                       <Button
+                        className="delet-btn"
                         type="primary"
                         danger
-                        onClick={showDeleteModal}
+                        onClick={() => showDeleteModal(item.id)}
                       >
-                        Delete
+                        Uchirish
                       </Button>
                     </td>
                   </tr>
@@ -257,11 +365,12 @@ function Catigories() {
           />
           <br />
           <input
+            required
             type="file"
             onChange={(e) => setPic(e.target.files[0])}
           />
           <br />
-          <button type="submit">Save Changes</button>
+          <button type="submit">Saqlash</button>
         </form>
       </Modal>
       <Modal

@@ -148,7 +148,7 @@ function Brend() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5">No items found</td>
+                    <td colSpan="5">Nimadir Xato</td>
                   </tr>
                 )}
               </tbody>

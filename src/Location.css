@@ -7,3 +7,19 @@
     margin: 0 auto;
     padding: 0;
 }
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #customers tr:hover {background-color: #ddd;}
+  
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #0051ff;
+    color: white;}
+    .edit-btn{
+        margin-left: 30px;
+    }
+    .delet-btn{
+        margin-left: 30px;
+    }

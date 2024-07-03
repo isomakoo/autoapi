@@ -1,5 +1,5 @@
 import './Location.css'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -35,6 +35,13 @@ function Location() {
     const logout=()=>{
         navigate('/')
       }
+      const [list,setlist]=useState();
+      useEffect(()=>{
+        fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
+        .then((res)=>res.json())
+        .then((data)=>setlist(data?.data))
+        .catch((error) => console.error("Error fetching data:", error));
+      });
     return (
       <div className='location-container'>
         <Layout className='home-loat'> 
@@ -113,7 +120,39 @@ function Location() {
             borderRadius: borderRadiusLG,
           }}
         >
-          Locationga Xush kelibsan
+         <table id='customers'>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Name</th>
+                    <th>Text</th>
+                    <th>Rasmi</th>
+                    <th>Uzgartirishlar</th>
+                </tr>
+            </thead>
+            <tbody>
+              {list && list.length>0?(
+                  list.map((item, index)=>(
+                    <tr key={index}>
+                        <td>{index+1}</td>
+                        <td>{item.text}</td>
+                        <td>{item.name}</td>
+                        <td>
+                            <img src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${item.image_src}`} width='100px' />
+                        </td>
+                        <td>
+                            <Button className='edit-btn' type='primary'>Tahrirlash</Button>
+                            <Button className='delet-btn' type='primary' danger>Uchirish</Button>
+                        </td>
+                    </tr>
+                  ))
+              ):(
+                <tr>
+                    <td>Nimadir Xato</td>
+                </tr>
+              )}
+            </tbody>
+         </table>
         </Content>
       </Layout>
     </Layout>
