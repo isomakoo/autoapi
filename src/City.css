@@ -1,12 +1,4 @@
-.city-container{
-    width: 100%;
-    margin: 0;padding: 0;
-}
-.home-loat{
-    width: 1400px;
-    margin: 0 auto;
-    padding: 0;
-}
+
 #customers {
     margin-top: 50px;
     font-family: Arial, Helvetica, sans-serif;
@@ -34,4 +26,9 @@
     }
     .delet-btn{
         margin-left: 30px;
+    }
+    .laout-menu{
+        font-family: sans-serif;
+        font-size: 14px;
+        font: optional;
     }

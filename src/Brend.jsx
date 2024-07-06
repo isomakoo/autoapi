@@ -1,11 +1,20 @@
 import "./Brend.css";
 import React, { useEffect, useState } from "react";
+import { IoCarSport } from "react-icons/io5";
+import { FaCity } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { MdOutlineChromeReaderMode } from "react-icons/md";
+import { SiBrenntag } from "react-icons/si";
+
+
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  HomeOutlined ,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -47,12 +56,21 @@ function Brend() {
   }
 
   return (
-    <div className="brend-container">
-      <Layout className="home-layout"> 
-        <Sider trigger={null} collapsible collapsed={collapsed}>
+    <div >
+      <Layout> 
+        <Sider trigger={null} collapsible collapsed={collapsed} 
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}>
           <div className="demo-logo-vertical" />
           <h1 className='home-title'>Autozoom Admin</h1>
           <Menu
+            className="laout-menu"
             onClick={buttonjon}
             theme="dark"
             mode="inline"
@@ -60,45 +78,51 @@ function Brend() {
             items={[
               {
                 key: "1",
-                icon: <UserOutlined />,
+                icon: <FaCity style={{ width: '25px', height: '25px' }} />,
                 label: "City",
               },
               {
                 key: "2",
-                icon: <VideoCameraOutlined />,
+                icon: <IoCarSport style={{ width: '25px', height: '25px' }}/>,
                 label: "Cars",
               },
               {
                 key: "3",
-                icon: <VideoCameraOutlined />,
+                icon: <SiBrenntag style={{ width: '25px', height: '25px' }} />,
                 label: "Brend",
               },
               {
                 key: "4",
-                icon: <VideoCameraOutlined />,
-                label: "Catigories",
+                icon: <IoMdSettings style={{ width: '25px', height: '25px' }}/>,
+                label: "Settings",
               },
               {
                 key: "5",
-                icon: <UploadOutlined />,
+                icon: <FaMapLocationDot style={{ width: '25px', height: '20px' }}/>,
                 label: "Location",
               },
               {
                 key: "6",
-                icon: <VideoCameraOutlined />,
+                icon: <MdOutlineChromeReaderMode style={{ width: '25px', height: '25px' }} />,
                 label: "Model",
               },
             ]}
           />
         </Sider>
-        <Layout>
+        <Layout   style={{
+          marginLeft: 200,
+        }}>
           <Header
+          className="header-btnlar"
             style={{
               padding: 0,
               background: colorBgContainer,
+              justifyContent: "space-between"
             }}
           >
-            <Button
+            
+      <div  className="btnlar" >
+      <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
@@ -108,20 +132,18 @@ function Brend() {
                 height: 64,
               }}
             />
-            <Button type="primary">Add</Button>
             <Button type="primary" danger className="logout-btn" onClick={logout}>
               Log out
             </Button>
+      </div>
           </Header>
           <Content
-            style={{
-              margin: "24px 16px",
-              padding: 24,
-              minHeight: 550,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
+           style={{
+            margin: '24px 16px 0',
+            overflow: 'initial',
+          }}
           >
+             <Button type="primary">Add</Button>
             <table id="customers">
               <thead>
                 <tr>

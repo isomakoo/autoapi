@@ -28,3 +28,20 @@
     .delet-btn{
         margin-left: 30px;
     }
+    .laout-menu{
+        font-family: sans-serif;
+        font-size: 14px;
+        font: optional;
+    }
+    .sider{
+        position: fixed;
+    }
+    .header-btnlar{
+       z-index: 1999;
+       transition: width 0.26s ease;
+    }
+    .btnlar{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }

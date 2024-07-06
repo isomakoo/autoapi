@@ -8,7 +8,6 @@
     padding: 0;
 }
 .logout-btn{
-    margin-left: 900px;
     align-items: center;
 }
 .home-title{
@@ -16,4 +15,9 @@
     font-size: 18px;
     font-family: sans-serif;
     color: rgb(193, 193, 193);
+}
+.laout-menu{
+    font-family: sans-serif;
+    font-size: 14px;
+    font: optional;
 }

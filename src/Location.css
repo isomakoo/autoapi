@@ -2,11 +2,6 @@
     width: 100%;
     margin: 0;padding: 0;
 }
-.home-loat{
-    width: 1400px;
-    margin: 0 auto;
-    padding: 0;
-}
 #customers tr:nth-child(even){background-color: #f2f2f2;}
   
   #customers tr:hover {background-color: #ddd;}
@@ -22,4 +17,9 @@
     }
     .delet-btn{
         margin-left: 30px;
+    }
+    .laout-menu{
+        font-family: sans-serif;
+        font-size: 14px;
+        font: optional;
     }

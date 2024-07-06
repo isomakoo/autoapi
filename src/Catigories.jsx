@@ -1,11 +1,18 @@
 import "./Catigories.css";
 import React, { useState, useEffect } from "react";
+import { IoCarSport } from "react-icons/io5";
+import { FaCity } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { MdOutlineChromeReaderMode } from "react-icons/md";
+import { SiBrenntag } from "react-icons/si";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  HomeOutlined ,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, Modal, message, theme } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -151,59 +158,65 @@ function Catigories() {
   };
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState("Content of the modal");
   const showModal = () => {
     setOpen(true);
   };
   const handleOk = () => {
-    setModalText("The modal will be closed after two seconds");
     setConfirmLoading(true);
     setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
     }, 2000);
-    katadd();
+    addCategory();
   };
   const handleCancell = () => {
     console.log("Clicked cancel button");
     setOpen(false);
   };
-  const katadd=()=>{
+  const addCategory = (e) => {
     const formData = new FormData();
     formData.append("name_en", nameEn);
     formData.append("name_ru", nameRu);
     formData.append("images", pic);
     e.preventDefault();
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories`,{
-        method:"POST",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: formData,
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
     })
-    .then((res) => res.json())
+      .then((res) => res.json())
       .then((resp) => {
         if (resp.success) {
           getList();
           handleCancel();
-          toast.success("Kategoriya Muvafaqatliy Qushilidi")
+          message.success("Category added successfully");
         } else {
-          console.error("Kategoriyani qo'shishda xato:", resp);
-          toast.error("Nimadir Xato")
+          console.error("Error adding category:", resp);
+          message.error("Something went wrong");
         }
       })
       .catch((error) => {
-        console.error("Ma'lumotlarni yuborishda xato:", error);
+        console.error("Error submitting data:", error);
       });
-  }
-
+  };
   return (
-    <div className="categories-container">
-      <Layout className="home-layout">
-        <Sider trigger={null} collapsible collapsed={collapsed}>
+    <div >
+      <Layout>
+        <Sider trigger={null} collapsible collapsed={collapsed}
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}>
           <div className="demo-logo-vertical" />
           <h1 className="home-title">Autozoom Admin</h1>
           <Menu
+          className="laout-menu"
             onClick={buttonjon}
             theme="dark"
             mode="inline"
@@ -211,44 +224,47 @@ function Catigories() {
             items={[
               {
                 key: "1",
-                icon: <UserOutlined />,
+                icon: <FaCity style={{ width: '25px', height: '25px' }} />,
                 label: "City",
               },
               {
                 key: "2",
-                icon: <VideoCameraOutlined />,
+                icon: <IoCarSport style={{ width: '25px', height: '25px' }}/>,
                 label: "Cars",
               },
               {
                 key: "3",
-                icon: <VideoCameraOutlined />,
+                icon: <SiBrenntag style={{ width: '25px', height: '25px' }} />,
                 label: "Brend",
               },
               {
                 key: "4",
-                icon: <VideoCameraOutlined />,
-                label: "Categories",
+                icon: <IoMdSettings style={{ width: '25px', height: '25px' }}/>,
+                label: "Settings",
               },
               {
                 key: "5",
-                icon: <VideoCameraOutlined />,
+                icon: <FaMapLocationDot style={{ width: '25px', height: '25px' }}/>,
                 label: "Location",
               },
               {
                 key: "6",
-                icon: <UploadOutlined />,
+                icon: <MdOutlineChromeReaderMode style={{ width: '25px', height: '25px' }} />,
                 label: "Model",
               },
             ]}
           />
         </Sider>
-        <Layout>
+        <Layout style={{
+          marginLeft: 200,
+        }}>
           <Header
             style={{
               padding: 0,
               background: colorBgContainer,
             }}
           >
+            <div className="btnlar">
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -259,23 +275,6 @@ function Catigories() {
                 height: 64,
               }}
             />
-            <Button type="primary" onClick={showModal}>
-             Qushish
-            </Button>
-            <Modal
-              title="Kategoriya qushish"
-              open={open}
-              onOk={handleOk}
-              confirmLoading={confirmLoading}
-              onCancel={handleCancell}
-            >
-            <p>Name en Kiriting</p>
-            <input type="text" placeholder="nameen" required value={nameRu}/> <br />
-            <p>Name ru Kiriting</p>
-            <input type="text" placeholder="Nameru" required value={nameEn}/> <br />
-            <p>rasm Kiriting</p>
-            <input type="file" placeholder="Rasm" required accept="image"   onChange={(e) => setPic(e.target.files[0])}/><br />
-            </Modal>
             <Button
               type="primary"
               danger
@@ -284,16 +283,52 @@ function Catigories() {
             >
               Chiqish
             </Button>
+            </div>
           </Header>
           <Content
-            style={{
-              margin: "24px 16px",
-              padding: 24,
-              minHeight: 550,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
+           style={{
+            margin: '24px 16px 0',
+            overflow: 'initial',
+          }}
           >
+            <Button type="primary" onClick={showModal}>
+             Qushish
+            </Button>
+            <Modal
+              title="Add Category"
+              open={open}
+              onOk={handleOk}
+              confirmLoading={confirmLoading}
+              onCancel={handleCancell}
+            >
+              <p>Enter Name (EN)</p>
+              <input
+                type="text"
+                placeholder="Name (EN)"
+                required
+                value={nameEn}
+                onChange={(e) => setNameEn(e.target.value)}
+              />{" "}
+              <br />
+              <p>Enter Name (RU)</p>
+              <input
+                type="text"
+                placeholder="Name (RU)"
+                required
+                value={nameRu}
+                onChange={(e) => setNameRu(e.target.value)}
+              />{" "}
+              <br />
+              <p>Upload Image</p>
+              <input
+                type="file"
+                placeholder="Image"
+                required
+                accept="image/*"
+                onChange={(e) => setPic(e.target.files[0])}
+              />
+              <br />
+            </Modal>
             <table id="customers">
               <thead>
                 <tr>
