@@ -9,10 +9,6 @@ import { SiBrenntag } from "react-icons/si";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  HomeOutlined ,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, Modal, message, theme } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +17,9 @@ function Catigories() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
-  const [idjon, setidjon] = useState(null);
+  const [idjon, setIdjon] = useState(null);
   const { Header, Sider, Content } = Layout;
   const [list, setList] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -33,9 +29,8 @@ function Catigories() {
   const [pic, setPic] = useState(null);
   const [editItemId, setEditItemId] = useState(null);
   const [error, setError] = useState(null);
-  const [addmodla, setaddmodal] = useState(false);
-  const accessToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+  const [addModal, setAddModal] = useState(false);
+  const accessToken = "your-access-token";
 
   useEffect(() => {
     getList();
@@ -51,7 +46,7 @@ function Catigories() {
       });
   };
 
-  const buttonjon = (e) => {
+  const buttonJon = (e) => {
     if (e.key === "1") {
       navigate("/city");
     } else if (e.key === "2") {
@@ -97,27 +92,27 @@ function Catigories() {
         if (resp.success) {
           getList();
           handleCancel();
-          toast.success("Kategoriya Muvafaqatliy Tahrirlandi");
+          message.success("Kategoriya muvaffaqiyatli tahrirlandi");
         } else {
           console.error("Kategoriyani tahrirlashda xato:", resp);
-          message.success("Kategoriya tahrirlanmadi");
+          message.error("Kategoriya tahrirlanmadi");
         }
       })
       .catch((error) => {
-        message.success("Kategoriya tahrirlandi");
         console.error("Ma'lumotlarni tahrirlashda xato:", error);
+        message.error("Kategoriya tahrirlanmadi");
       });
   };
 
   const showDeleteModal = (id) => {
     setIsDeleteModalOpen(true);
-    setidjon(id);
+    setIdjon(id);
   };
 
   const confirmDelete = () => {
     if (idjon) {
       uchirbtn(idjon);
-      message.success("Muvafaqatliy uchirildi");
+      message.success("Muvaffaqiyatli o'chirildi");
     }
   };
 
@@ -140,7 +135,7 @@ function Catigories() {
       .then((res) => res.json())
       .then((resp) => {
         if (resp.success) {
-          message.success("muvafaqatliy uchirildi");
+          message.success("Muvaffaqiyatli o'chirildi");
           getList();
           handleCancel();
         } else {
@@ -156,6 +151,7 @@ function Catigories() {
   const logout = () => {
     navigate("/");
   };
+
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const showModal = () => {
@@ -170,15 +166,13 @@ function Catigories() {
     addCategory();
   };
   const handleCancell = () => {
-    console.log("Clicked cancel button");
     setOpen(false);
   };
-  const addCategory = (e) => {
+  const addCategory = () => {
     const formData = new FormData();
     formData.append("name_en", nameEn);
     formData.append("name_ru", nameRu);
     formData.append("images", pic);
-    e.preventDefault();
     fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/categories`, {
       method: "POST",
       headers: {
@@ -201,63 +195,66 @@ function Catigories() {
         console.error("Error submitting data:", error);
       });
   };
+
   return (
-    <div >
+    <div>
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}
-        style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          bottom: 0,
-        }}>
-          <div className="demo-logo-vertical" />
-          <h1 className="home-title">Autozoom Admin</h1>
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}>
+          <div className="demo-logo-vertical">
+            <img src="https://admin-panel-team.netlify.app/favicon.svg" alt="Logo" />
+          </div>
+          <h1 className="home-title">
+            AutozoomAdmin
+          </h1>
           <Menu
-          className="laout-menu"
-            onClick={buttonjon}
+            className="layout-menu"
+            onClick={buttonJon}
             theme="dark"
             mode="inline"
             defaultSelectedKeys={["4"]}
             items={[
               {
                 key: "1",
-                icon: <FaCity style={{ width: '25px', height: '25px' }} />,
+                icon: <FaCity />,
                 label: "City",
               },
               {
                 key: "2",
-                icon: <IoCarSport style={{ width: '25px', height: '25px' }}/>,
+                icon: <IoCarSport />,
                 label: "Cars",
               },
               {
                 key: "3",
-                icon: <SiBrenntag style={{ width: '25px', height: '25px' }} />,
+                icon: <SiBrenntag />,
                 label: "Brend",
               },
               {
                 key: "4",
-                icon: <IoMdSettings style={{ width: '25px', height: '25px' }}/>,
+                icon: <IoMdSettings />,
                 label: "Settings",
               },
               {
                 key: "5",
-                icon: <FaMapLocationDot style={{ width: '25px', height: '25px' }}/>,
+                icon: <FaMapLocationDot />,
                 label: "Location",
               },
               {
                 key: "6",
-                icon: <MdOutlineChromeReaderMode style={{ width: '25px', height: '25px' }} />,
+                icon: <MdOutlineChromeReaderMode />,
                 label: "Model",
               },
             ]}
           />
         </Sider>
-        <Layout style={{
-          marginLeft: 200,
-        }}>
+        <Layout style={{ marginLeft: collapsed ? 80 : 200 }}>
           <Header
             style={{
               padding: 0,
@@ -265,34 +262,34 @@ function Catigories() {
             }}
           >
             <div className="btnlar">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: "16px",
-                width: 64,
-                height: 64,
-              }}
-            />
-            <Button
-              type="primary"
-              danger
-              className="logout-btn"
-              onClick={logout}
-            >
-              Chiqish
-            </Button>
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+              <Button
+                type="primary"
+                danger
+                className="logout-btn"
+                onClick={logout}
+              >
+                Chiqish
+              </Button>
             </div>
           </Header>
           <Content
-           style={{
-            margin: '24px 16px 0',
-            overflow: 'initial',
-          }}
+            style={{
+              margin: '24px 16px 0',
+              overflow: 'initial',
+            }}
           >
             <Button type="primary" onClick={showModal}>
-             Qushish
+              Qushish
             </Button>
             <Modal
               title="Add Category"

@@ -45,3 +45,35 @@
         align-items: center;
         justify-content: space-between;
     }
+    .ant-menu{
+        height: 100vh;
+    }
+    .demo-logo-vertical {
+        width: 100% !important;
+        background-color: #020003;
+        margin: 0 !important;
+        display: none; /* Default to hide image */
+      }
+      
+      .home-title {
+        background-color: #020003;
+        margin: 0 !important;
+        padding-top: 20px;
+        display: block; /* Default to show title */
+      }
+      
+      .home-title img {
+        display: none; /* Hide image when home-title is visible */
+      }
+      
+      /* Media query to adjust the layout when the Sider is collapsed */
+      .ant-layout-sider-collapsed .home-title {
+        display: none; /* Hide title when collapsed */
+      }
+      
+      .ant-layout-sider-collapsed .demo-logo-vertical {
+        display: block; /* Show image when collapsed */
+        width: 50px; /* Adjust size as needed */
+        height: auto; /* Maintain aspect ratio */
+      }
+      

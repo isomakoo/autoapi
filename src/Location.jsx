@@ -1,180 +1,528 @@
-import './Location.css'
-import React, { useEffect, useState } from 'react';
+import "./Location.css";
+import React, { useEffect, useState } from "react";
 import { IoCarSport } from "react-icons/io5";
 import { FaCity } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdOutlineChromeReaderMode } from "react-icons/md";
 import { SiBrenntag } from "react-icons/si";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  HomeOutlined ,
-} from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
-import { useNavigate } from 'react-router-dom';
-function Location() {
-    const navigate = useNavigate();
+  Button,
+  Input,
+  Layout,
+  Menu,
+  Modal,
+  theme,
+  Form,
+  message,
+  Upload,
+} from "antd";
+import { useNavigate } from "react-router-dom";
+import { UploadOutlined } from "@ant-design/icons";
 
-  const buttonjon= (e) => {
-    if (e.key === '1') {
-      navigate('/city');
-    } else if (e.key === '2') {
-      navigate('/cars');
-    } else if (e.key === '3') {
-      navigate('/brend');
-    } else if (e.key === '4') {
-      navigate('/catigories');
-    } else if (e.key === '5') {
-      navigate('/location');
-    } else if (e.key === '6') {
-      navigate('/model');
+function Location() {
+  const navigate = useNavigate();
+
+  const buttonjon = (e) => {
+    if (e.key === "1") {
+      navigate("/city");
+    } else if (e.key === "2") {
+      navigate("/cars");
+    } else if (e.key === "3") {
+      navigate("/brend");
+    } else if (e.key === "4") {
+      navigate("/catigories");
+    } else if (e.key === "5") {
+      navigate("/location");
+    } else if (e.key === "6") {
+      navigate("/model");
     }
   };
-    const [collapsed, setCollapsed] = useState(false);
-    const {
-      token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
-    const { Header, Sider, Content } = Layout;
-    const logout=()=>{
-        navigate('/')
-      }
-      const [list,setlist]=useState();
-      useEffect(()=>{
-        fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
-        .then((res)=>res.json())
-        .then((data)=>setlist(data?.data))
-        .catch((error) => console.error("Error fetching data:", error));
+
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+  const { Header, Sider, Content } = Layout;
+
+  const logout = () => {
+    navigate("/");
+  };
+
+  const [list, setList] = useState([]);
+  const [form] = Form.useForm();
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
+  const [confirmLoadingAdd, setConfirmLoadingAdd] = useState(false);
+  const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
+  useEffect(() => {
+    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
+      .then((res) => res.json())
+      .then((data) => setList(data?.data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  const showModalAdd = () => {
+    setOpenAdd(true);
+  };
+
+  const handleOkAdd = () => {
+    form.validateFields()
+      .then(values => {
+        setConfirmLoadingAdd(true);
+        const { name, text, image } = values;
+        const accessToken =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+
+        const formData = new FormData();
+        formData.append("text", text);
+        formData.append("name", name);
+
+        if (image && image[0] && image[0].originFileObj) {
+          formData.append("images", image[0].originFileObj);
+        } else {
+          message.error("Please upload an image.");
+          setConfirmLoadingAdd(false);
+          return;
+        }
+
+        fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+        })
+          .then((res) => {
+            if (!res.ok) {
+              return res.text().then((text) => {
+                throw new Error(`HTTP error! status: ${res.status}, message: ${text}`);
+              });
+            }
+            return res.json();
+          })
+          .then((resp) => {
+            if (resp.success) {
+              fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
+                .then((res) => res.json())
+                .then((data) => setList(data?.data))
+                .catch((error) => console.error("Error fetching data:", error));
+              setOpenAdd(false);
+              message.success("Brend muvaffaqiyatli qo'shildi");
+            } else {
+              message.error("Xatolik yuz berdi");
+            }
+          })
+          .catch((error) => {
+            console.error("Ma'lumotni yuborishda xatolik:", error);
+            message.error("Server bilan bog'lanishda xatolik: " + error.message);
+          })
+          .finally(() => {
+            setConfirmLoadingAdd(false);
+          });
+      })
+      .catch(info => {
+        console.log("Validation Failed:", info);
       });
-    return (
-      <div>
-        <Layout> 
-      <Sider trigger={null} collapsible collapsed={collapsed}
-      style={{
-        overflow: 'auto',
-        height: '100vh',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        bottom: 0,
-      }}>
-        <div className="demo-logo-vertical" />
-        <h1 className='home-title'>Autozoom Admin</h1>
-        <Menu
-        className="laout-menu"
-        onClick={buttonjon}
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['1']}
-          items={[
-            {
-              key: "1",
-              icon: <FaCity style={{ width: '25px', height: '25px' }} />,
-              label: "City",
-            },
-            {
-              key: "2",
-              icon: <IoCarSport style={{ width: '25px', height: '25px' }}/>,
-              label: "Cars",
-            },
-            {
-              key: "3",
-              icon: <SiBrenntag style={{ width: '25px', height: '25px' }} />,
-              label: "Brend",
-            },
-            {
-              key: "4",
-              icon: <IoMdSettings style={{ width: '25px', height: '25px' }}/>,
-              label: "Settings",
-            },
-            {
-              key: "5",
-              icon: <FaMapLocationDot style={{ width: '25px', height: '25px' }}/>,
-              label: "Location",
-            },
-            {
-              key: "6",
-              icon: <MdOutlineChromeReaderMode style={{ width: '25px', height: '25px' }} />,
-              label: "Model",
-            },
-          ]}
-        />
-      </Sider>
-      <Layout style={{
-          marginLeft: 200,
-        }}>
-        <Header
+  };
+
+  const handleCancelAdd = () => {
+    setOpenAdd(false);
+  };
+
+  const showModalEdit = (item) => {
+    setCurrentItem(item);
+    form.setFieldsValue({
+      name: item.name,
+      text: item.text,
+    });
+    setOpenEdit(true);
+  };
+
+  const handleOkEdit = () => {
+    form.validateFields()
+      .then(values => {
+        setConfirmLoadingEdit(true);
+        const { name, text, image } = values;
+        const accessToken =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+
+        const formData = new FormData();
+        formData.append("text", text);
+        formData.append("name", name);
+
+        if (image && image[0] && image[0].originFileObj) {
+          formData.append("images", image[0].originFileObj);
+        }
+
+        fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations/${currentItem.id}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+        })
+          .then((res) => {
+            if (!res.ok) {
+              return res.text().then((text) => {
+                throw new Error(`HTTP error! status: ${res.status}, message: ${text}`);
+              });
+            }
+            return res.json();
+          })
+          .then((resp) => {
+            if (resp.success) {
+              fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
+                .then((res) => res.json())
+                .then((data) => setList(data?.data))
+                .catch((error) => console.error("Error fetching data:", error));
+              setOpenEdit(false);
+              message.success("Brend muvaffaqiyatli tahrirlandi");
+            } else {
+              message.error("Xatolik yuz berdi");
+            }
+          })
+          .catch((error) => {
+            console.error("Ma'lumotni yangilashda xatolik:", error);
+            message.error("Server bilan bog'lanishda xatolik: " + error.message);
+          })
+          .finally(() => {
+            setConfirmLoadingEdit(false);
+          });
+      })
+      .catch(info => {
+        console.log("Validation Failed:", info);
+      });
+  };
+
+  const handleCancelEdit = () => {
+    setOpenEdit(false);
+  };
+
+  const showConfirmDelete = (item) => {
+    setItemToDelete(item);
+    setOpenConfirmDelete(true);
+  };
+
+  const handleOkDelete = () => {
+    if (itemToDelete) {
+      const accessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+
+      fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations/${itemToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            return res.text().then((text) => {
+              throw new Error(`HTTP error! status: ${res.status}, message: ${text}`);
+            });
+          }
+          return res.json();
+        })
+        .then((resp) => {
+          if (resp.success) {
+            fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/locations`)
+              .then((res) => res.json())
+              .then((data) => setList(data?.data))
+              .catch((error) => console.error("Error fetching data:", error));
+            message.success("Brend muvaffaqiyatli o'chirildi");
+          } else {
+            message.error("Xatolik yuz berdi");
+          }
+          setOpenConfirmDelete(false);
+          setItemToDelete(null);
+        })
+        .catch((error) => {
+          console.error("Ma'lumotni o'chirishda xatolik:", error);
+          message.error("Server bilan bog'lanishda xatolik: " + error.message);
+          setOpenConfirmDelete(false);
+          setItemToDelete(null);
+        });
+    } else {
+      setOpenConfirmDelete(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setOpenConfirmDelete(false);
+    setItemToDelete(null);
+  };
+
+  return (
+    <div>
+      <Layout>
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
           style={{
-            padding: 0,
-            background: colorBgContainer,
+            overflow: "auto",
+            height: "100vh",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
           }}
         >
-          <div className="btnlar">
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-          />
-            <Button type='primary' danger className='logout-btn' onClick={logout}>
-              Log out
-            </Button>
+          <div className="demo-logo-vertical">
+            <img src="https://admin-panel-team.netlify.app/favicon.svg" alt="Logo" />
           </div>
-        </Header>
-        <Content
+          <h1 className="home-title">
+            AutozoomAdmin
+          </h1>
+          <Menu
+            className="layout-menu"
+            onClick={buttonjon}
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={["1"]}
+            items={[
+              {
+                key: "1",
+                icon: <FaCity />,
+                label: "City",
+              },
+              {
+                key: "2",
+                icon: <IoCarSport />,
+                label: "Cars",
+              },
+              {
+                key: "3",
+                icon: <SiBrenntag />,
+                label: "Brend",
+              },
+              {
+                key: "4",
+                icon: <IoMdSettings />,
+                label: "Settings",
+              },
+              {
+                key: "5",
+                icon: <FaMapLocationDot />,
+                label: "Location",
+              },
+              {
+                key: "6",
+                icon: <MdOutlineChromeReaderMode />,
+                label: "Model",
+              },
+            ]}
+          />
+        </Sider>
+        <Layout
           style={{
-            margin: '24px 16px 0',
-            overflow: 'initial',
+            marginLeft: collapsed ? 80 : 200, // Adjust marginLeft based on sidebar collapse state
           }}
         >
-           <Button type='primary'>
+          <Header
+            style={{
+              padding: 0,
+              background: colorBgContainer,
+            }}
+          >
+            <div className="btnlar">
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+              <Button
+                type="primary"
+                danger
+                className="logout-btn"
+                onClick={logout}
+              >
+                Log out
+              </Button>
+            </div>
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px 0",
+              overflow: "initial",
+            }}
+          >
+            <Button type="primary" onClick={showModalAdd}>
               Add
             </Button>
-         <table id='customers'>
-            <thead>
+            <Modal
+              title="Add Location"
+              open={openAdd}
+              onOk={handleOkAdd}
+              confirmLoading={confirmLoadingAdd}
+              onCancel={handleCancelAdd}
+            >
+              <Form
+                form={form}
+                layout="vertical"
+                initialValues={{ name: "", text: "", image: null }}
+              >
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[
+                    { required: true, message: "Please input the name!" },
+                  ]}
+                >
+                  <Input type="text" placeholder="name" />
+                </Form.Item>
+                <Form.Item
+                  label="Text"
+                  name="text"
+                  rules={[
+                    { required: true, message: "Please input the text!" },
+                  ]}
+                >
+                  <Input type="text" placeholder="text" />
+                </Form.Item>
+                <Form.Item
+                  label="Image"
+                  name="image"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e && e.fileList}
+                  rules={[
+                    { required: true, message: "Please upload an image!" },
+                  ]}
+                >
+                  <Upload
+                    name="image"
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false} // Prevent automatic upload
+                  >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                  </Upload>
+                </Form.Item>
+              </Form>
+            </Modal>
+            <Modal
+              title="Edit Location"
+              open={openEdit}
+              onOk={handleOkEdit}
+              confirmLoading={confirmLoadingEdit}
+              onCancel={handleCancelEdit}
+            >
+              <Form
+                form={form}
+                layout="vertical"
+                initialValues={{ name: "", text: "", image: null }}
+              >
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[
+                    { required: true, message: "Please input the name!" },
+                  ]}
+                >
+                  <Input type="text" placeholder="name" />
+                </Form.Item>
+                <Form.Item
+                  label="Text"
+                  name="text"
+                  rules={[
+                    { required: true, message: "Please input the text!" },
+                  ]}
+                >
+                  <Input type="text" placeholder="text" />
+                </Form.Item>
+                <Form.Item
+                  label="Image"
+                  name="image"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e && e.fileList}
+                >
+                  <Upload
+                    name="image"
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false} // Prevent automatic upload
+                  >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                  </Upload>
+                </Form.Item>
+              </Form>
+            </Modal>
+            <Modal
+              title="Kategoriyani uchirish"
+              open={openConfirmDelete}
+              onOk={handleOkDelete}
+              onCancel={handleCancelDelete}
+              okText="Delete"
+              cancelText="Cancel"
+            >
+              <p>Kategoriyani nuchirishni xohlayszmi?</p>
+            </Modal>
+            <table id="customers">
+              <thead>
                 <tr>
-                    <th>Index</th>
-                    <th>Name</th>
-                    <th>Text</th>
-                    <th>Rasmi</th>
-                    <th>Uzgartirishlar</th>
+                  <th>Index</th>
+                  <th>Name</th>
+                  <th>Text</th>
+                  <th>Rasmi</th>
+                  <th>Uzgartirishlar</th>
                 </tr>
-            </thead>
-            <tbody>
-              {list && list.length>0?(
-                  list.map((item, index)=>(
+              </thead>
+              <tbody>
+                {list && list.length > 0 ? (
+                  list.map((item, index) => (
                     <tr key={index}>
-                        <td>{index+1}</td>
-                        <td>{item.text}</td>
-                        <td>{item.name}</td>
-                        <td>
-                            <img src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${item.image_src}`} width='100px' />
-                        </td>
-                        <td>
-                            <Button className='edit-btn' type='primary'>Tahrirlash</Button>
-                            <Button className='delet-btn' type='primary' danger>Uchirish</Button>
-                        </td>
+                      <td>{index + 1}</td>
+                      <td>{item.name}</td>
+                      <td>{item.text}</td>
+                      <td>
+                        <img
+                          src={`https://autoapi.dezinfeksiyatashkent.uz/api/uploads/images/${item.image_src}`}
+                          width="100px"
+                          alt={item.name}
+                        />
+                      </td>
+                      <td>
+                        <Button
+                          className="edit-btn"
+                          type="primary"
+                          style={{margin:10}}
+                          onClick={() => showModalEdit(item)}
+                        >
+                          Tahrirlash
+                        </Button>
+                        <Button
+                          className="delete-btn"
+                          type="primary"
+                          danger
+                          onClick={() => showConfirmDelete(item)}
+                        >
+                          Uchirish
+                        </Button>
+                      </td>
                     </tr>
                   ))
-              ):(
-                <tr>
-                    <td>Nimadir Xato</td>
-                </tr>
-              )}
-            </tbody>
-         </table>
-        </Content>
+                ) : (
+                  <tr>
+                    <td colSpan="5">Nimadir Xato</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
-      </div>
-    )
-  }
-  
-  export default Location
+    </div>
+  );
+}
+
+export default Location;

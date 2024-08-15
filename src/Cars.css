@@ -33,3 +33,46 @@
         font-size: 14px;
         font: optional;
     }
+    /* Basic styles */
+.demo-logo-vertical {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+  }
+  
+  .demo-logo-vertical img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .home-title {
+    font-size: 24px; /* Default font size */
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  /* Media Queries for responsiveness */
+  .demo-logo-vertical {
+    display: none; /* Default to hide image */
+  }
+  
+  .home-title {
+    display: block; /* Default to show title */
+  }
+  
+  .home-title img {
+    display: none; /* Hide image when home-title is visible */
+  }
+  
+  /* Media query to adjust the layout when the Sider is collapsed */
+  .ant-layout-sider-collapsed .home-title {
+    display: none; /* Hide title when collapsed */
+  }
+  
+  .ant-layout-sider-collapsed .demo-logo-vertical {
+    display: block; /* Show image when collapsed */
+    width: 50px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+  }
+  
