@@ -1,6 +1,6 @@
 .brend-container{
     width: 100%;
-    margin: 0;padding: 0;
+    margin: 0 !important;padding: 0;
 }
 .home-layout{
     width: 1400px;
@@ -50,7 +50,6 @@
     }
     .demo-logo-vertical {
         width: 100% !important;
-        background-color: #020003;
         margin: 0 !important;
         display: none; /* Default to hide image */
       }
@@ -65,7 +64,9 @@
       .home-title img {
         display: none; /* Hide image when home-title is visible */
       }
-      
+      .ant-layout-header{
+        background-color: white !important;
+      }
       /* Media query to adjust the layout when the Sider is collapsed */
       .ant-layout-sider-collapsed .home-title {
         display: none; /* Hide title when collapsed */

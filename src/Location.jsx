@@ -289,7 +289,7 @@ function Location() {
               {
                 key: "1",
                 icon: <FaCity />,
-                label: "City",
+                label: "Cities",
               },
               {
                 key: "2",
@@ -299,22 +299,22 @@ function Location() {
               {
                 key: "3",
                 icon: <SiBrenntag />,
-                label: "Brend",
+                label: "Brends",
               },
               {
                 key: "4",
                 icon: <IoMdSettings />,
-                label: "Settings",
+                label: "Catigories",
               },
               {
                 key: "5",
                 icon: <FaMapLocationDot />,
-                label: "Location",
+                label: "Locations",
               },
               {
                 key: "6",
                 icon: <MdOutlineChromeReaderMode />,
-                label: "Model",
+                label: "Models",
               },
             ]}
           />
