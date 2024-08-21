@@ -34,4 +34,25 @@
     width: 50px; /* Adjust size as needed */
     height: auto; /* Maintain aspect ratio */
   }
+  #customers {
+    margin-top: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
   
+  #customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #customers tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #customers tr:hover {background-color: #ddd;}
+  
+  #customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #0051ff;
+    color: white;}

@@ -7,7 +7,7 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { MdOutlineChromeReaderMode } from "react-icons/md";
 import { SiBrenntag } from "react-icons/si";
 import { MenuFoldOutlined, MenuUnfoldOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, Modal, message, theme, Form, Input, Upload } from "antd";
+import { Button, Layout, Menu, Modal, message, theme, Form, Input, Upload , Table} from "antd";
 import { useNavigate } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
@@ -298,7 +298,7 @@ function Catigories() {
               <p>Are you sure you want to delete this category?</p>
             </Modal>
             {error && <p>{error}</p>}
-            <table className="custom-table">
+            <table id="customers">
               <thead>
                 <tr>
                   <th>ID</th>
