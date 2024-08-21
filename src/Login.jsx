@@ -22,7 +22,7 @@ function Login() {
         }
       })
       .catch((error) => {
-        message.error("Internetga ulanmagansiz");
+        message.error("Login yoki parol xato");
       });
   };
 

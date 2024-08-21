@@ -1,41 +1,27 @@
 import "./Model.css";
 import React, { useEffect, useState } from "react";
-import { IoCarSport } from "react-icons/io5";
-import { FaCity } from "react-icons/fa";
-import { IoMdSettings } from "react-icons/io";
-import { FaMapLocationDot } from "react-icons/fa6";
-import { MdOutlineChromeReaderMode } from "react-icons/md";
-import { SiBrenntag } from "react-icons/si";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  HomeOutlined,
-} from "@ant-design/icons";
-import { Button, Layout, Menu, Modal, theme, message, Input, Select } from "antd";
+import { Button, Modal, Input, Select, message, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
 function Model() {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [modoch, setmodoch] = useState(false);
-  const [uch, setuch] = useState(false);
-  const [editModal, setEditModal] = useState(false); // New state for edit modal
-  const [pro, setpro] = useState([]);
+  const [modoch, setModoch] = useState(false);
+  const [uch, setUch] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [pro, setPro] = useState([]);
   const [nameEn, setNameEn] = useState("");
   const [brandId, setBrandId] = useState(null);
-  const [currentId, setCurrentId] = useState(null); // New state for current item ID
-  const [idjon, setidjon] = useState(null); // Added state for delete
+  const [currentId, setCurrentId] = useState(null);
+  const [idjon, setIdjon] = useState(null);
 
   const accessToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
 
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  const { Header, Sider, Content } = Layout;
+
+  const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
 
   useEffect(() => {
     fetch("https://autoapi.dezinfeksiyatashkent.uz/api/models")
@@ -54,7 +40,7 @@ function Model() {
   useEffect(() => {
     fetch("https://autoapi.dezinfeksiyatashkent.uz/api/brands")
       .then((res) => res.json())
-      .then((data) => setpro(data?.data || []))
+      .then((data) => setPro(data?.data || []))
       .catch((error) => {
         console.error("Error fetching brands:", error);
         message.error("Error fetching brands");
@@ -77,20 +63,18 @@ function Model() {
     navigate("/");
   };
 
-  const modadd = () => {
-    setmodoch(true);
-  };
+  const modAdd = () => setModoch(true);
 
-  const handleCancell = () => {
-    setmodoch(false);
-    setuch(false);
-    setEditModal(false); // Close edit modal on cancel
+  const handleCancel = () => {
+    setModoch(false);
+    setUch(false);
+    setEditModal(false);
     setNameEn("");
     setBrandId(null);
     setCurrentId(null);
   };
 
-  const addbtbn = () => {
+  const addBtn = () => {
     const formData = new FormData();
     formData.append("name", nameEn);
     formData.append("brand_id", brandId);
@@ -106,7 +90,7 @@ function Model() {
       .then((resp) => {
         if (resp.success) {
           setList((prevList) => [...prevList, resp.data]);
-          setmodoch(false);
+          setModoch(false);
           message.success("Model muvafaqiyatli qo'shildi");
         } else {
           message.error("Nimadir noto'g'ri ketdi");
@@ -117,7 +101,7 @@ function Model() {
       });
   };
 
-  const editbtbn = () => {
+  const editBtn = () => {
     const formData = new FormData();
     formData.append("name", nameEn);
     formData.append("brand_id", brandId);
@@ -148,16 +132,16 @@ function Model() {
       });
   };
 
-  const deletbtn = (item) => {
-    setuch(true);
-    setidjon(item.id);
+  const deleteBtn = (item) => {
+    setUch(true);
+    setIdjon(item.id);
   };
 
   const confirmDelete = () => {
-    uchirbtn(idjon);
+    deleteItem(idjon);
   };
 
-  const uchirbtn = (id) => {
+  const deleteItem = (id) => {
     fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/models/${id}`, {
       method: "DELETE",
       headers: {
@@ -167,9 +151,9 @@ function Model() {
       .then((res) => res.json())
       .then((resp) => {
         if (resp.success) {
-          message.success("Muvafaqiyatli o'chirildi");
           setList((prevList) => prevList.filter((item) => item.id !== id));
-          setuch(false);
+          message.success("Muvafaqiyatli o'chirildi");
+          setUch(false);
         } else {
           message.error("O'chirishda xatolik yuz berdi");
         }
@@ -188,129 +172,125 @@ function Model() {
 
   return (
     <div>
-      
-            <Button type="primary" onClick={modadd}>
-              Add
-            </Button>
-            <Modal open={modoch} onCancel={handleCancell} onOk={addbtbn}
-            title='Kategoriya qushish'>
-              <form>
-                <Input
-                  type="text"
-                  required
-                  placeholder="Name (En)"
-                  value={nameEn}
-                  style={{width: 200, margin: 10}}
-                  onChange={(e) => setNameEn(e.target.value)}
-                />
-                <br />
-                <Select
-                  onChange={(value) => setBrandId(value)}
-                  value={brandId}
-                  placeholder="Select Brand"
-                  style={{ width: 200, margin: 10 }}
-                  required
-                >
-                  {pro && pro.length > 0 ? (
-                    pro.map((item) => (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.title}
-                      </Select.Option>
-                    ))
-                  ) : (
-                    <Select.Option value="" disabled>No brands available</Select.Option>
-                  )}
-                </Select>
-              </form>
-            </Modal>
-            <Modal
-              open={editModal}
-              onCancel={handleCancell}
-              onOk={editbtbn}
-              title="Kategoriyani Tahrirlash"
-            >
-              <form>
-                <Input
-                  type="text"
-                  required
-                  placeholder="Name (En)"
-                  value={nameEn}
-                  style={{width: 200, margin: 10}}
-                  onChange={(e) => setNameEn(e.target.value)}
-                />
-                <br />
-                <Select
-                  onChange={(value) => setBrandId(value)}
-                  value={brandId}
-                  placeholder="Select Brand"
-                  style={{ width: 200, margin: 10 }}
-                  required
-                >
-                  {pro && pro.length > 0 ? (
-                    pro.map((item) => (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.title}
-                      </Select.Option>
-                    ))
-                  ) : (
-                    <Select.Option value="" disabled>No brands available</Select.Option>
-                  )}
-                </Select>
-              </form>
-            </Modal>
-            <div className="table-container">
-              {loading ? (
-                <p>Loading...</p>
-              ) : error ? (
-                <p>Error loading data</p>
-              ) : (
-                <table id="customers">
-                  <thead>
-                    <tr>
-                      <th>Index</th>
-                      <th>Name</th>
-                      <th>Text</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.map((item, index) => (
-                      <tr key={item.id || index}>
-                        <td>{index + 1}</td>
-                        <td>{item.brand_title}</td>
-                        <td>{item.name}</td>
-                        <td>
-                          <Button
-                            className="edit-btn"
-                            type="primary"
-                            style={{margin: 10}}
-                            onClick={() => openEditModal(item)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            className="delete-btn"
-                            type="primary"
-                            danger
-                            onClick={() => deletbtn(item)}
-                          >
-                            Delete
-                          </Button>
-                          <Modal
-                            open={uch}
-                            onCancel={handleCancell}
-                            onOk={confirmDelete}
-                            title="Kategoriyani Uchirish"
-                          >
-                            <p>Kategoriyani uchirishni xohlayszmi</p>
-                          </Modal>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+      <Button type="primary" onClick={modAdd}>Add</Button>
+      <Modal open={modoch} onCancel={handleCancel} onOk={addBtn} title="Model qo'shish">
+        <form>
+          <Input
+            type="text"
+            required
+            placeholder="Name (En)"
+            value={nameEn}
+            style={{ width: 200, margin: 10 }}
+            onChange={(e) => setNameEn(e.target.value)}
+          />
+          <br />
+          <Select
+            onChange={(value) => setBrandId(value)}
+            value={brandId}
+            placeholder="Select Brand"
+            style={{ width: 200, margin: 10 }}
+            required
+          >
+            {pro.length > 0 ? (
+              pro.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.title}
+                </Select.Option>
+              ))
+            ) : (
+              <Select.Option value="" disabled>No brands available</Select.Option>
+            )}
+          </Select>
+        </form>
+      </Modal>
+      <Modal
+        open={editModal}
+        onCancel={handleCancel}
+        onOk={editBtn}
+        title="Modelni Tahrirlash"
+      >
+        <form>
+          <Input
+            type="text"
+            required
+            placeholder="Name (En)"
+            value={nameEn}
+            style={{ width: 200, margin: 10 }}
+            onChange={(e) => setNameEn(e.target.value)}
+          />
+          <br />
+          <Select
+            onChange={(value) => setBrandId(value)}
+            value={brandId}
+            placeholder="Select Brand"
+            style={{ width: 200, margin: 10 }}
+            required
+          >
+            {pro.length > 0 ? (
+              pro.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.title}
+                </Select.Option>
+              ))
+            ) : (
+              <Select.Option value="" disabled>No brands available</Select.Option>
+            )}
+          </Select>
+        </form>
+      </Modal>
+      <Modal
+        open={uch}
+        onCancel={handleCancel}
+        onOk={confirmDelete}
+        title="Modelni O'chirish"
+      >
+        <p>Modelni o'chirishni xohlaysizmi?</p>
+      </Modal>
+      <div className="table-container">
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error loading data</p>
+        ) : (
+          <table id="customers">
+            <thead>
+              <tr>
+                <th>Index</th>
+                <th>Brand</th>
+                <th>Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((item, index) => (
+                <tr key={item.id || index}>
+                  <td>{index + 1}</td>
+                  <td>{item.brand_title}</td>
+                  <td>{item.name}</td>
+                  <td>
+                    <Button
+                      className="edit-btn"
+                      type="primary"
+                      style={{ margin: 10 }}
+                      onClick={() => openEditModal(item)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      className="delete-btn"
+                      type="primary"
+                      danger
+                      onClick={() => deleteBtn(item)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
