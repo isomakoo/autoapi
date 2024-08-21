@@ -188,102 +188,7 @@ function Model() {
 
   return (
     <div>
-      <Layout>
-        <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          style={{
-            overflow: "auto",
-            height: "100vh",
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-          }}
-        >
-        <div className="demo-logo-vertical">
-            <img src="https://admin-panel-team.netlify.app/favicon.svg" alt="Logo" />
-          </div>
-          <h1 className="home-title">
-            AutozoomAdmin
-          </h1>
-          <Menu
-            className="layout-menu"
-            onClick={handleMenuClick}
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={["1"]}
-            items={[
-              {
-                key: "1",
-                icon: <FaCity />,
-                label: "Cities",
-              },
-              {
-                key: "2",
-                icon: <IoCarSport />,
-                label: "Cars",
-              },
-              {
-                key: "3",
-                icon: <SiBrenntag />,
-                label: "Brends",
-              },
-              {
-                key: "4",
-                icon: <IoMdSettings />,
-                label: "Catigories",
-              },
-              {
-                key: "5",
-                icon: <FaMapLocationDot />,
-                label: "Locations",
-              },
-              {
-                key: "6",
-                icon: <MdOutlineChromeReaderMode />,
-                label: "Models",
-              },
-            ]}
-          />
-        </Sider>
-        <Layout
-         style={{ marginLeft: collapsed ? 80 : 200 }}
-        >
-          <Header
-            style={{
-              padding: 0,
-              background: colorBgContainer,
-            }}
-          >
-            <div className="btnlar">
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{
-                  fontSize: "16px",
-                  width: 64,
-                  height: 64,
-                }}
-              />
-              <Button
-                type="primary"
-                danger
-                className="logout-btn"
-                onClick={handleLogout}
-              >
-                Log out
-              </Button>
-            </div>
-          </Header>
-          <Content
-            style={{
-              margin: "24px 16px 0",
-              overflow: "initial",
-            }}
-          >
+      
             <Button type="primary" onClick={modadd}>
               Add
             </Button>
@@ -406,9 +311,6 @@ function Model() {
                 </table>
               )}
             </div>
-          </Content>
-        </Layout>
-      </Layout>
     </div>
   );
 }

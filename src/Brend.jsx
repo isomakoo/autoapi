@@ -28,17 +28,6 @@ function Brend() {
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const [form] = Form.useForm();
 
-  const buttonjon = (e) => {
-    const paths = {
-      "1": "/city",
-      "2": "/cars",
-      "3": "/brend",
-      "4": "/catigories",
-      "5": "/location",
-      "6": "/model"
-    };
-    navigate(paths[e.key] || "/");
-  };
 
   const getList = async () => {
     try {
@@ -218,45 +207,7 @@ function Brend() {
 
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="logo" />
-        <div className="demo-logo-vertical">
-            <img src="https://admin-panel-team.netlify.app/favicon.svg" alt="Logo" />
-          </div>
-          <h1 className="home-title">AutozoomAdmin</h1>
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["3"]}
-          onClick={buttonjon}
-        >
-          <Menu.Item key="1" icon={<FaCity />}>Cities</Menu.Item>
-          <Menu.Item key="2" icon={<IoCarSport />}>Cars</Menu.Item>
-          <Menu.Item key="3" icon={<SiBrenntag />}>Brends</Menu.Item>
-          <Menu.Item key="4" icon={<IoMdSettings />}>Catigories</Menu.Item>
-          <Menu.Item key="5" icon={<FaMapLocationDot />}>Locations</Menu.Item>
-          <Menu.Item key="6" icon={<MdOutlineChromeReaderMode />}>Models</Menu.Item>
-        </Menu>
-      </Sider>
-      <Layout>
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ marginLeft: 16 }}
-          />
-        <Button
-                type="primary"
-                danger
-                className="logout-btn"
-                onClick={logout}
-              >
-                Chiqish
-              </Button>
-        </Header>
-        <Content style={{ margin: "16px" }}>
+                <>
         <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -271,8 +222,6 @@ function Brend() {
             rowKey={(record) => record.id}
             pagination={{ pageSize: 10 }}
           />
-        </Content>
-      </Layout>
 
       {/* Add Modal */}
       <Modal
@@ -361,7 +310,7 @@ function Brend() {
       >
         <p>Brendni o'chirmoqchimisiz?</p>
       </Modal>
-    </Layout>
+    </>
   );
 }
 

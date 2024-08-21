@@ -107,18 +107,6 @@ function Cars() {
       });
   }, []);
 
-  const handleMenuClick = (e) => {
-    const paths = {
-      1: "/city",
-      2: "/cars",
-      3: "/brend",
-      4: "/categories",
-      5: "/location",
-      6: "/model",
-    };
-    navigate(paths[e.key]);
-  };
-
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -236,48 +224,11 @@ function Cars() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div className="logo" />
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['2']}
-          onClick={handleMenuClick}
-        >
-          <Menu.Item key="1" icon={<FaCity />}>
-            Cities
-          </Menu.Item>
-          <Menu.Item key="2" icon={<IoCarSport />}>
-            Cars
-          </Menu.Item>
-          <Menu.Item key="3" icon={<SiBrenntag />}>
-            Brands
-          </Menu.Item>
-          <Menu.Item key="4" icon={<MdOutlineChromeReaderMode />}>
-            Categories
-          </Menu.Item>
-          <Menu.Item key="5" icon={<FaMapLocationDot />}>
-            Locations
-          </Menu.Item>
-          <Menu.Item key="6" icon={<IoMdSettings />}>
-            Models
-          </Menu.Item>
-        </Menu>
-      </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          <div className="trigger" onClick={() => setCollapsed(!collapsed)}>
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          </div>
-        </Header>
-        <Content style={{ margin: '16px' }}>
+    <>
           <Button type="primary" onClick={showModal}>
             Add New Car
           </Button>
           <Table columns={columns} dataSource={list} rowKey="id" />
-        </Content>
-      </Layout>
       <Modal
         title="Add New Car"
         open={isModalOpen}
@@ -520,7 +471,7 @@ function Cars() {
           />
         </div>
       </Modal>
-    </Layout>
+      </>
   );
 }
 

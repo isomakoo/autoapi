@@ -64,17 +64,7 @@ function City() {
     }
   };
 
-  const handleMenuClick = (e) => {
-    const routes = {
-      1: "/city",
-      2: "/cars",
-      3: "/brend",
-      4: "/catigories",
-      5: "/location",
-      6: "/model",
-    };
-    navigate(routes[e.key]);
-  };
+ 
 
   const logout = () => navigate("/");
 
@@ -258,93 +248,7 @@ function City() {
 
   return (
     <div>
-      <Layout style={{ minHeight: "100vh" }}>
-        <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          style={{
-            height: "100vh",
-            position: "fixed",
-            left: 0,
-            top: 0,
-            bottom: 0,
-          }}
-        >
-          <div className="logo" />
-          <div className="demo-logo-vertical">
-            <img
-              src="https://admin-panel-team.netlify.app/favicon.svg"
-              alt="Logo"
-            />
-          </div>
-          <h1 className="home-title">AutozoomAdmin</h1>
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={["1"]}
-            onClick={handleMenuClick}
-          >
-            <Menu.Item key="1" icon={<FaCity />}>
-              <a href="#">Cities</a>
-            </Menu.Item>
-            <Menu.Item key="2" icon={<IoCarSport />}>
-              <a href="#">Cars</a>
-            </Menu.Item>
-            <Menu.Item key="3" icon={<SiBrenntag />}>
-              <a href="#">Brends</a>
-            </Menu.Item>
-            <Menu.Item key="4" icon={<IoMdSettings />}>
-              <a href="#">Categories</a>
-            </Menu.Item>
-            <Menu.Item key="5" icon={<FaMapLocationDot />}>
-              <a href="#">Locations</a>
-            </Menu.Item>
-            <Menu.Item key="6" icon={<MdOutlineChromeReaderMode />}>
-              <a href="#">Models</a>
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout
-          className="site-layout"
-          style={{
-            marginLeft: collapsed ? 80 : 200,
-            transition: "margin-left 0.2s",
-          }}
-        >
-          <Header
-            style={{
-              padding: 0,
-              background: colorBgContainer,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingLeft: "16px",
-              paddingRight: "16px",
-              borderBottomLeftRadius: borderRadiusLG,
-              borderBottomRightRadius: borderRadiusLG,
-            }}
-          >
-            {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                className: "trigger",
-                onClick: () => setCollapsed(!collapsed),
-              }
-            )}
-            <Button onClick={logout} type="primary" danger>
-              Logout
-            </Button>
-          </Header>
-          <Content
-            style={{
-              margin: "24px 16px",
-              padding: 24,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-              minHeight: 280,
-            }}
-          >
+     
             <Button
               onClick={openModal}
               type="primary"
@@ -354,10 +258,7 @@ function City() {
               Add City
             </Button>
             <Table columns={columns} dataSource={list} rowKey="id" />
-          </Content>
-        </Layout>
-      </Layout>
-
+        
       <Modal
         title="Add City"
         visible={isModalOpen}
