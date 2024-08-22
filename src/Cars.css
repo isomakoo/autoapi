@@ -75,4 +75,12 @@
     width: 50px; /* Adjust size as needed */
     height: auto; /* Maintain aspect ratio */
   }
+   .ant-modal-contenyt{
+       width: 600px !important;
+  }
+  .custom-modal{
+    width: 750px !important;
+  }
+  
+  
   

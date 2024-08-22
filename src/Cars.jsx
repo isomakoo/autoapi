@@ -1,22 +1,23 @@
 import "./Cars.css";
 import React, { useEffect, useState } from "react";
-import { IoCarSport } from "react-icons/io5";
-import { FaCity } from "react-icons/fa";
-import { IoMdSettings } from "react-icons/io";
-import { FaMapLocationDot } from "react-icons/fa6";
-import { MdOutlineChromeReaderMode } from "react-icons/md";
-import { SiBrenntag } from "react-icons/si";
-import { Modal, Select, Button, message, Input, Layout, Menu, theme, Table } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Select,
+  Button,
+  message,
+  Input,
+  Layout,
+  Table,
+  Checkbox,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
+const { Header, Sider, Content } = Layout;
 
 function Cars() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const { token: { colorBgContainer } } = theme.useToken();
-  const { Header, Sider, Content } = Layout;
   const [list, setList] = useState([]);
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
@@ -29,27 +30,29 @@ function Cars() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedLocationId, setSelectedLocationId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCar, setEditingCar] = useState(null);
   const [formValues, setFormValues] = useState({
-    year: '',
-    color: '',
-    seconds: '',
+    year: "",
+    color: "",
+    seconds: "",
     images: [],
     image: null,
-    maxSpeed: '',
-    motor: '',
-    mechanics: '',
-    driveSide: '',
-    cylinderType: '',
-    limitPreday: '',
-    deposit: '',
-    premiumProtectionPrice: '',
-    priceInAED: '',
-    priceInAEDOtd: '',
-    priceInUSD: '',
-    priceInUSDOtd: '',
-    motors: '',
+    maxSpeed: "",
+    motor: "",
+    mechanics: "",
+    driveSide: "",
+    cylinderType: "",
+    limitPreday: "",
+    deposit: "",
+    premiumProtectionPrice: "",
+    priceInAED: "",
+    priceInAEDOtd: "",
+    priceInUSD: "",
+    priceInUSDOtd: "",
+    motors: "",
     rasm: null,
-    transmission: '', // Qo'shilgan
+    transmission: "",
     radio: false,
   });
 
@@ -107,79 +110,129 @@ function Cars() {
       });
   }, []);
 
-  const showModal = () => {
+  const showModal = (car = null) => {
+    setIsEditMode(!!car);
+    setEditingCar(car);
+    setFormValues(
+      car
+        ? {
+            ...car,
+            image: null,
+            images: [],
+            rasm: null,
+          }
+        : {
+            year: "",
+            color: "",
+            seconds: "",
+            images: [],
+            image: null,
+            maxSpeed: "",
+            motor: "",
+            mechanics: "",
+            driveSide: "",
+            cylinderType: "",
+            limitPreday: "",
+            deposit: "",
+            premiumProtectionPrice: "",
+            priceInAED: "",
+            priceInAEDOtd: "",
+            priceInUSD: "",
+            priceInUSDOtd: "",
+            motors: "",
+            rasm: null,
+            transmission: "",
+            radio: false,
+          }
+    );
     setIsModalOpen(true);
   };
 
-  const handleOkadd = async () => {
+  const handleOk = async () => {
     const formData = new FormData();
-
-    // Add data to FormData object
-    formData.append('brand_id', selectedBrandId);
-    formData.append('model_id', selectedModelId);
-    formData.append('city_id', selectedCityId);
-    formData.append('location_id', selectedLocationId);
-    formData.append('category_id', selectedCategoryId);
-    formData.append('year', parseInt(formValues.year, 10) || ''); // Ensure it's an integer
-    formData.append('color', formValues.color);
-    formData.append('seconds', parseFloat(formValues.seconds) || ''); // Ensure it's a number
-    formData.append('max_speed', parseFloat(formValues.maxSpeed) || ''); // Ensure it's a number
-    formData.append('max_people', parseFloat(formValues.motor) || ''); // Ensure it's a number
-    formData.append('petrol', formValues.mechanics);
-    formData.append('drive_side', formValues.driveSide);
-    formData.append('transmission', formValues.transmission);
-    formData.append('motor', formValues.cylinderType);
-    formData.append('limitperday', parseFloat(formValues.limitPreday) || ''); // Ensure it's a number
-    formData.append('deposit', parseFloat(formValues.deposit) || ''); // Ensure it's a number
-    formData.append('premium_protection', parseFloat(formValues.premiumProtectionPrice) || ''); // Ensure it's a number
-    formData.append('price_in_aed', parseFloat(formValues.priceInAED) || ''); // Ensure it's a number
-    formData.append('price_in_aed_sale', parseFloat(formValues.priceInAEDOtd) || ''); // Ensure it's a number
-    formData.append('price_in_usd', parseFloat(formValues.priceInUSD) || ''); // Ensure it's a number
-    formData.append('price_in_usd_sale', parseFloat(formValues.priceInUSDOtd) || ''); // Ensure it's a number
+    formData.append("brand_id", selectedBrandId || "");
+    formData.append("model_id", selectedModelId || "");
+    formData.append("city_id", selectedCityId || "");
+    formData.append("location_id", selectedLocationId || ""); // Ensure this is a valid UUID
+    formData.append("category_id", selectedCategoryId || "");
+    formData.append("year", parseInt(formValues.year, 10) || "");
+    formData.append("color", formValues.color || "");
+    formData.append("seconds", parseFloat(formValues.seconds) || "");
+    formData.append("max_speed", parseFloat(formValues.maxSpeed) || "");
+    formData.append("max_people", parseFloat(formValues.motor) || "");
+    formData.append("petrol", formValues.mechanics || "");
+    formData.append("drive_side", formValues.driveSide || "");
+    formData.append("transmission", formValues.transmission || ""); // Ensure this is not empty
+    formData.append("motor", formValues.cylinderType || "");
+    formData.append("limitperday", parseFloat(formValues.limitPreday) || "");
+    formData.append("deposit", parseFloat(formValues.deposit) || "");
+    formData.append(
+      "premium_protection",
+      parseFloat(formValues.premiumProtectionPrice) || ""
+    );
+    formData.append("price_in_aed", parseFloat(formValues.priceInAED) || "");
+    formData.append(
+      "price_in_aed_sale",
+      parseFloat(formValues.priceInAEDOtd) || ""
+    );
+    formData.append("price_in_usd", parseFloat(formValues.priceInUSD) || "");
+    formData.append(
+      "price_in_usd_sale",
+      parseFloat(formValues.priceInUSDOtd) || ""
+    );
 
     if (formValues.image) {
-      formData.append('images', formValues.image);
+      formData.append("images", formValues.image);
     }
 
     if (formValues.rasm) {
-      formData.append('images', formValues.rasm);
+      formData.append("images", formValues.rasm);
     }
 
     if (formValues.images.length > 0) {
       formValues.images.forEach((file) => {
-        formData.append('cover', file);
+        formData.append("cover", file);
       });
     }
 
-    formData.append('inclusive', formValues.radio ? 'true' : 'false');
+    formData.append("inclusive", formValues.radio ? "true" : "false");
 
     try {
       const accessToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
 
+      const url = isEditMode
+        ? `https://autoapi.dezinfeksiyatashkent.uz/api/cars/${editingCar.id}`
+        : "https://autoapi.dezinfeksiyatashkent.uz/api/cars";
+      const method = isEditMode ? "PUT" : "POST";
 
-      const response = await fetch('https://autoapi.dezinfeksiyatashkent.uz/api/cars', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         body: formData,
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
       if (response.ok) {
-        message.success('Data submitted successfully');
+        message.success(
+          isEditMode ? "Car updated successfully" : "Car added successfully"
+        );
         setIsModalOpen(false);
+        // Refresh the car list after successful operation
+        const response = await fetch("https://autoapi.dezinfeksiyatashkent.uz/api/cars");
+        const data = await response.json();
+        setList(data?.data || []);
       } else {
         const errorText = await response.text();
         message.error(`Server Error: ${errorText}`);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       message.error(`An error occurred: ${error.message}`);
     }
   };
-
-  const handleCanceladd = () => {
+  const handleCancel = () => {
     setIsModalOpen(false);
   };
 
@@ -195,283 +248,329 @@ function Cars() {
 
   const handleMultipleFileChange = (e) => {
     const { files } = e.target;
-    setFormValues((prevValues) => ({ ...prevValues, images: Array.from(files) }));
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      images: Array.from(files),
+    }));
+  };
+
+  const handleDelete = (car) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this car?",
+      content: `Car ID: ${car.id}`,
+      okText: "Delete",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          const accessToken =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
+    
+          const response = await fetch(
+            `https://autoapi.dezinfeksiyatashkent.uz/api/cars/${car.id}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            message.success("Car deleted successfully");
+            setList((prevList) =>
+              prevList.filter((item) => item.id !== car.id)
+            );
+          } else {
+            const errorText = await response.text();
+            message.error(`Server Error: ${errorText}`);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          message.error(`An error occurred: ${error.message}`);
+        }
+      },
+    });
   };
 
   const columns = [
     {
-      title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
-      render: (text) => <img src={text} alt="car" style={{ width: 50, height: 50 }} />,
+      title: "Brand",
+      dataIndex: "brand",
+      key: "brand",
+      render: (text) => text.title, // brand.titles ni chiqaradi
+    },  
+    {
+      title: "Model",
+      dataIndex: "model",
+      key: "model",
+      render: (text) => text.name,
     },
     {
-      title: 'Brand',
-      dataIndex: 'brand',
-      key: 'brand',
+      title: "Color",
+      dataIndex: "color",
+      key: "color",
     },
     {
-      title: 'Model',
-      dataIndex: 'model',
-      key: 'model',
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      render: (text) => text.name_en,
     },
     {
-      title: 'Year',
-      dataIndex: 'year',
-      key: 'year',
+      title: "Year",
+      dataIndex: "year",
+      key: "year",
     },
-    // Add other columns as needed
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) => (
+        <div>
+          <Button onClick={() => showModal(record) } type="primary" style={{margin: 10}}>Edit</Button>
+          <Button onClick={() => handleDelete(record)} type="primary" danger>
+            Delete
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
-    <>
-          <Button type="primary" onClick={showModal}>
-            Add New Car
-          </Button>
+        <Content
+          style={{
+            padding: 24,
+            margin: 0,
+            minHeight: 280,
+          }}
+        >
+           <Button type="primary" onClick={() => showModal()}>
+          Add New Car
+        </Button>
           <Table columns={columns} dataSource={list} rowKey="id" />
-      <Modal
-        title="Add New Car"
-        open={isModalOpen}
-        onOk={handleOkadd}
-        onCancel={handleCanceladd}
-      >
-        <div>
-          <label>Brand</label>
-          <Select
-            onChange={(value) => setSelectedBrandId(value)}
-            placeholder="Select Brand"
+          <Modal
+          className="custom-modal"
+            title={isEditMode ? "Edit Car" : "Add New Car"}
+            visible={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText={isEditMode ? "Update" : "Add"}
           >
-            {brands.map((brand) => (
-              <Option key={brand.id} value={brand.id}>
-                {brand.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <label>Model</label>
-          <Select
-            onChange={(value) => setSelectedModelId(value)}
-            placeholder="Select Model"
-          >
-            {models.map((model) => (
-              <Option key={model.id} value={model.id}>
-                {model.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <label>City</label>
-          <Select
-            onChange={(value) => setSelectedCityId(value)}
-            placeholder="Select City"
-          >
-            {cities.map((city) => (
-              <Option key={city.id} value={city.id}>
-                {city.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <label>Location</label>
-          <Select
-            onChange={(value) => setSelectedLocationId(value)}
-            placeholder="Select Location"
-          >
-            {locations.map((location) => (
-              <Option key={location.id} value={location.id}>
-                {location.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <label>Category</label>
-          <Select
-            onChange={(value) => setSelectedCategoryId(value)}
-            placeholder="Select Category"
-          >
-            {categories.map((category) => (
-              <Option key={category.id} value={category.id}>
-                {category.name}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <label>Year</label>
-          <Input
-            name="year"
-            value={formValues.year}
-            onChange={handleInputChange}
-            placeholder="Year"
-          />
-        </div>
-        <div>
-          <label>Color</label>
-          <Input
-            name="color"
-            value={formValues.color}
-            onChange={handleInputChange}
-            placeholder="Color"
-          />
-        </div>
-        <div>
-          <label>Seconds</label>
-          <Input
-            name="seconds"
-            value={formValues.seconds}
-            onChange={handleInputChange}
-            placeholder="Seconds"
-          />
-        </div>
-        <div>
-          <label>Max Speed</label>
-          <Input
-            name="maxSpeed"
-            value={formValues.maxSpeed}
-            onChange={handleInputChange}
-            placeholder="Max Speed"
-          />
-        </div>
-        <div>
-          <label>Motor</label>
-          <Input
-            name="motor"
-            value={formValues.motor}
-            onChange={handleInputChange}
-            placeholder="Motor"
-          />
-        </div>
-        <div>
-          <label>Mechanics</label>
-          <Input
-            name="mechanics"
-            value={formValues.mechanics}
-            onChange={handleInputChange}
-            placeholder="Mechanics"
-          />
-        </div>
-        <div>
-          <label>Drive Side</label>
-          <Input
-            name="driveSide"
-            value={formValues.driveSide}
-            onChange={handleInputChange}
-            placeholder="Drive Side"
-          />
-        </div>
-        <div>
-          <label>Transmission</label>
-          <Input
-            name="transmission"
-            value={formValues.transmission}
-            onChange={handleInputChange}
-            placeholder="Transmission"
-          />
-        </div>
-        <div>
-          <label>Cylinder Type</label>
-          <Input
-            name="cylinderType"
-            value={formValues.cylinderType}
-            onChange={handleInputChange}
-            placeholder="Cylinder Type"
-          />
-        </div>
-        <div>
-          <label>Limit Per Day</label>
-          <Input
-            name="limitPreday"
-            value={formValues.limitPreday}
-            onChange={handleInputChange}
-            placeholder="Limit Per Day"
-          />
-        </div>
-        <div>
-          <label>Deposit</label>
-          <Input
-            name="deposit"
-            value={formValues.deposit}
-            onChange={handleInputChange}
-            placeholder="Deposit"
-          />
-        </div>
-        <div>
-          <label>Premium Protection Price</label>
-          <Input
-            name="premiumProtectionPrice"
-            value={formValues.premiumProtectionPrice}
-            onChange={handleInputChange}
-            placeholder="Premium Protection Price"
-          />
-        </div>
-        <div>
-          <label>Price in AED</label>
-          <Input
-            name="priceInAED"
-            value={formValues.priceInAED}
-            onChange={handleInputChange}
-            placeholder="Price in AED"
-          />
-        </div>
-        <div>
-          <label>Price in AED Sale</label>
-          <Input
-            name="priceInAEDOtd"
-            value={formValues.priceInAEDOtd}
-            onChange={handleInputChange}
-            placeholder="Price in AED Sale"
-          />
-        </div>
-        <div>
-          <label>Price in USD</label>
-          <Input
-            name="priceInUSD"
-            value={formValues.priceInUSD}
-            onChange={handleInputChange}
-            placeholder="Price in USD"
-          />
-        </div>
-        <div>
-          <label>Price in USD Sale</label>
-          <Input
-            name="priceInUSDOtd"
-            value={formValues.priceInUSDOtd}
-            onChange={handleInputChange}
-            placeholder="Price in USD Sale"
-          />
-        </div>
-        <div>
-          <label>Image</label>
-          <Input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div>
-          <label>Additional Images</label>
-          <Input
-            type="file"
-            multiple
-            name="images"
-            onChange={handleMultipleFileChange}
-          />
-        </div>
-        <div>
-          <label>Radio</label>
-          <Input
-            type="checkbox"
-            name="radio"
-            checked={formValues.radio}
-            onChange={(e) => setFormValues((prevValues) => ({ ...prevValues, radio: e.target.checked }))}
-          />
-        </div>
-      </Modal>
-      </>
+            <Input
+            style={{width:200, margin: 10}}
+              name="year"
+              value={formValues.year}
+              onChange={handleInputChange}
+              placeholder="Year"
+            />
+            <Input
+              style={{width:200, margin: 10}}
+              name="color"
+              value={formValues.color}
+              onChange={handleInputChange}
+              placeholder="Color"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="seconds"
+              value={formValues.seconds}
+              onChange={handleInputChange}
+              placeholder="Seconds"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="maxSpeed"
+              value={formValues.maxSpeed}
+              onChange={handleInputChange}
+              placeholder="Max Speed"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="motor"
+              value={formValues.motor}
+              onChange={handleInputChange}
+              placeholder="Motor"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="transmission"
+              value={formValues.transmission}
+              onChange={handleInputChange}
+              placeholder="Transmission"
+            />
+
+            <Input
+             style={{width:200, margin: 10}}
+              name="mechanics"
+              value={formValues.mechanics}
+              onChange={handleInputChange}
+              placeholder="Mechanics"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="driveSide"
+              value={formValues.driveSide}
+              onChange={handleInputChange}
+              placeholder="Drive Side"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="cylinderType"
+              value={formValues.cylinderType}
+              onChange={handleInputChange}
+              placeholder="Cylinder Type"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="limitPreday"
+              value={formValues.limitPreday}
+              onChange={handleInputChange}
+              placeholder="Limit per Day"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="deposit"
+              value={formValues.deposit}
+              onChange={handleInputChange}
+              placeholder="Deposit"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="premiumProtectionPrice"
+              value={formValues.premiumProtectionPrice}
+              onChange={handleInputChange}
+              placeholder="Premium Protection Price"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="priceInAED"
+              value={formValues.priceInAED}
+              onChange={handleInputChange}
+              placeholder="Price in AED"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="priceInAEDOtd"
+              value={formValues.priceInAEDOtd}
+              onChange={handleInputChange}
+              placeholder="Price in AED (Sale)"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="priceInUSD"
+              value={formValues.priceInUSD}
+              onChange={handleInputChange}
+              placeholder="Price in USD"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="priceInUSDOtd"
+              value={formValues.priceInUSDOtd}
+              onChange={handleInputChange}
+              placeholder="Price in USD (Sale)"
+            />
+            <Input
+             style={{width:200, margin: 10}}
+              name="motors"
+              value={formValues.motors}
+              onChange={handleInputChange}
+              placeholder="Motors"
+            />
+            <Input type="file" name="image" onChange={handleFileChange}  style={{width:200, margin: 10}}/>
+            <Input type="file" name="rasm" onChange={handleFileChange}  style={{width:200, margin: 10}} />
+            <Input
+             style={{width:200, margin: 10}}
+              type="file"
+              name="images"
+              multiple
+              onChange={handleMultipleFileChange}
+            />
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedBrandId}
+              onChange={(value) => setSelectedBrandId(value)}
+              placeholder="Select Brand"
+            >
+              {brands.map((brand) => (
+                <Option key={brand.id} value={brand.id}>
+                  {brand.title}
+                </Option>
+              ))}
+            </Select>
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedModelId}
+              onChange={(value) => setSelectedModelId(value)}
+              placeholder="Select Model"
+            >
+              {models.map((model) => (
+                <Option key={model.id} value={model.id}>
+                  {model.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedCityId}
+              onChange={(value) => setSelectedCityId(value)}
+              placeholder="Select City"
+            >
+              {cities.map((city) => (
+                <Option key={city.id} value={city.id}>
+                  {city.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedCategoryId}
+              onChange={(value) => setSelectedCategoryId(value)}
+              placeholder="Select Category"
+            >
+              {categories.map((category) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name_en}
+                </Option>
+              ))}
+            </Select>
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedLocationId}
+              onChange={(value) => setSelectedLocationId(value)}
+              placeholder="Select Location"
+            >
+              {locations.map((location) => (
+                <Option key={location.id} value={location.id}>
+                  {location.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
+             style={{width:200, margin: 10}}
+              value={selectedLocationId}
+              onChange={(value) => setSelectedLocationId(value)}
+              placeholder="Select Location"
+            >
+              {locations.map((location) => (
+                <Option key={location.id} value={location.id}>
+                  {location.name}
+                </Option>
+              ))}
+            </Select>
+
+            <Checkbox
+             style={{width:200, margin: 10}}
+              checked={formValues.radio}
+              onChange={(e) =>
+                setFormValues((prevValues) => ({
+                  ...prevValues,
+                  radio: e.target.checked,
+                }))
+              }
+            >
+              Include
+            </Checkbox>
+          </Modal>
+        </Content>
   );
 }
 
