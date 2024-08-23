@@ -130,10 +130,15 @@ function City() {
       const formData = new FormData();
       formData.append("name", names);
       formData.append("text", texts);
-      if (images) formData.append("image_src", images);
+      
+      // Append the image file only if it has been changed/selected
+      if (images) {
+        formData.append("images", images); // Make sure this key matches the API's expected field name
+      }
+  
       const accessToken =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
-
+  
       const response = await fetch(
         `https://autoapi.dezinfeksiyatashkent.uz/api/cities/${idedit}`,
         {
@@ -144,7 +149,7 @@ function City() {
           body: formData,
         }
       );
-
+  
       const result = await response.json();
       if (result.success) {
         message.success("City updated successfully");
@@ -160,7 +165,7 @@ function City() {
       setConfirmLoadingEdit(false);
     }
   };
-
+  
   const handleCancelEdit = () => setIsModalOpenEdit(false);
 
   const showModalDelete = (item) => {

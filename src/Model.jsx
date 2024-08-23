@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Button, Modal, Input, Select, message, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
+const { Option } = Select;
+
 function Model() {
   const navigate = useNavigate();
   const [list, setList] = useState([]);
@@ -18,33 +20,38 @@ function Model() {
   const [idjon, setIdjon] = useState(null);
 
   const accessToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
-
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTczNzkzNTUtZDNjYi00NzY1LTgwMGEtNDZhOTU1NWJiOWQyIiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTcxOTY2MTE1NCwiZXhwIjoxNzUxMTk3MTU0fQ.GOoRompLOhNJyChMNC1sstK9_BbZAfff0GZ9ox4pZb4";
 
   const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
 
   useEffect(() => {
-    fetch("https://autoapi.dezinfeksiyatashkent.uz/api/models")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch("https://autoapi.dezinfeksiyatashkent.uz/api/models");
+        const data = await response.json();
         setList(data?.data || []);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching data:", error);
         setError(error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchModels();
   }, []);
 
   useEffect(() => {
-    fetch("https://autoapi.dezinfeksiyatashkent.uz/api/brands")
-      .then((res) => res.json())
-      .then((data) => setPro(data?.data || []))
-      .catch((error) => {
+    const fetchBrands = async () => {
+      try {
+        const response = await fetch("https://autoapi.dezinfeksiyatashkent.uz/api/brands");
+        const data = await response.json();
+        setPro(data?.data || []);
+      } catch (error) {
         console.error("Error fetching brands:", error);
         message.error("Error fetching brands");
-      });
+      }
+    };
+    fetchBrands();
   }, []);
 
   const handleMenuClick = (e) => {
@@ -74,62 +81,70 @@ function Model() {
     setCurrentId(null);
   };
 
-  const addBtn = () => {
+  const addBtn = async () => {
+    if (!nameEn || !brandId) {
+      message.error("Please fill in all required fields.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", nameEn);
     formData.append("brand_id", brandId);
 
-    fetch("https://autoapi.dezinfeksiyatashkent.uz/api/models", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((resp) => {
-        if (resp.success) {
-          setList((prevList) => [...prevList, resp.data]);
-          setModoch(false);
-          message.success("Model muvafaqiyatli qo'shildi");
-        } else {
-          message.error("Nimadir noto'g'ri ketdi");
-        }
-      })
-      .catch((error) => {
-        console.error("Ma'lumotni yuborishda xatolik:", error);
+    try {
+      const response = await fetch("https://autoapi.dezinfeksiyatashkent.uz/api/models", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
       });
+      const resp = await response.json();
+      if (resp.success) {
+        setList((prevList) => [...prevList, resp.data]);
+        handleCancel();
+        message.success("Model muvafaqiyatli qo'shildi");
+      } else {
+        message.error("Nimadir noto'g'ri ketdi");
+      }
+    } catch (error) {
+      console.error("Ma'lumotni yuborishda xatolik:", error);
+    }
   };
 
-  const editBtn = () => {
+  const editBtn = async () => {
+    if (!nameEn || !brandId) {
+      message.error("Please fill in all required fields.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", nameEn);
     formData.append("brand_id", brandId);
 
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/models/${currentId}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((resp) => {
-        if (resp.success) {
-          setList((prevList) =>
-            prevList.map((item) =>
-              item.id === currentId ? resp.data : item
-            )
-          );
-          setEditModal(false);
-          message.success("Model muvafaqiyatli yangilandi");
-        } else {
-          message.error("Nimadir noto'g'ri ketdi");
-        }
-      })
-      .catch((error) => {
-        console.error("Yangilanishda xatolik:", error);
+    try {
+      const response = await fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/models/${currentId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
       });
+      const resp = await response.json();
+      if (resp.success) {
+        setList((prevList) =>
+          prevList.map((item) =>
+            item.id === currentId ? resp.data : item
+          )
+        );
+        handleCancel();
+        message.success("Model muvafaqiyatli yangilandi");
+      } else {
+        message.error("Nimadir noto'g'ri ketdi");
+      }
+    } catch (error) {
+      console.error("Yangilanishda xatolik:", error);
+    }
   };
 
   const deleteBtn = (item) => {
@@ -141,26 +156,25 @@ function Model() {
     deleteItem(idjon);
   };
 
-  const deleteItem = (id) => {
-    fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/models/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((resp) => {
-        if (resp.success) {
-          setList((prevList) => prevList.filter((item) => item.id !== id));
-          message.success("Muvafaqiyatli o'chirildi");
-          setUch(false);
-        } else {
-          message.error("O'chirishda xatolik yuz berdi");
-        }
-      })
-      .catch((error) => {
-        console.error("Ma'lumotlarni o'chirishda xatolik:", error);
+  const deleteItem = async (id) => {
+    try {
+      const response = await fetch(`https://autoapi.dezinfeksiyatashkent.uz/api/models/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
+      const resp = await response.json();
+      if (resp.success) {
+        setList((prevList) => prevList.filter((item) => item.id !== id));
+        message.success("Muvafaqiyatli o'chirildi");
+        setUch(false);
+      } else {
+        message.error("O'chirishda xatolik yuz berdi");
+      }
+    } catch (error) {
+      console.error("Ma'lumotlarni o'chirishda xatolik:", error);
+    }
   };
 
   const openEditModal = (item) => {
@@ -193,12 +207,12 @@ function Model() {
           >
             {pro.length > 0 ? (
               pro.map((item) => (
-                <Select.Option key={item.id} value={item.id}>
+                <Option key={item.id} value={item.id}>
                   {item.title}
-                </Select.Option>
+                </Option>
               ))
             ) : (
-              <Select.Option value="" disabled>No brands available</Select.Option>
+              <Option value="" disabled>No brands available</Option>
             )}
           </Select>
         </form>
@@ -228,12 +242,12 @@ function Model() {
           >
             {pro.length > 0 ? (
               pro.map((item) => (
-                <Select.Option key={item.id} value={item.id}>
+                <Option key={item.id} value={item.id}>
                   {item.title}
-                </Select.Option>
+                </Option>
               ))
             ) : (
-              <Select.Option value="" disabled>No brands available</Select.Option>
+              <Option value="" disabled>No brands available</Option>
             )}
           </Select>
         </form>
