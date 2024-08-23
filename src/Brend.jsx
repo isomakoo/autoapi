@@ -63,7 +63,7 @@ function Brend() {
       const resp = await response.json();
       if (resp.success) {
         getList();
-        handleCanceladd();
+        setOpen(false);
         message.success("Brend muvaffaqiyatli qo'shildi");
       } else {
         message.error("Xatolik yuz berdi");
